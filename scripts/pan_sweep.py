@@ -10,7 +10,12 @@ with wave.open("pan_sweep.wav", "w") as f:
 
 
     for i in range(132300):
-        pan = i / 132300
+        if i < 66150:
+            pan = 0
+        else: 
+            pan = 1 
+        
+        
         beep = math.sin(2 * math.pi * 440 * i / 44100)
         left = beep * (1 - pan)
         right = beep * pan
