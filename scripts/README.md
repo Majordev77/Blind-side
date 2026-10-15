@@ -36,4 +36,14 @@ test" video before blaming the code.
 
 ## Known issue
 There is a small "pop" at the end because the sound stops abruptly.
-A short fade-out would fix it.
+A short fade-out would fix it. 
+
+## Reuse of live synthesis
+This script does NOT reuse the live app's sound code. It is standalone
+Python (`math.sin` + `wave`), separate from how the app generates sound
+live. The two paths can diverge (tone, panning, volume levels), so a clip
+rendered this way may not sound exactly like the real app.
+
+For the demo clip ticket: either render the clip through the app's own
+synthesis code, or explicitly match its settings (frequency, panning
+law, levels) and compare by ear against the live app.
