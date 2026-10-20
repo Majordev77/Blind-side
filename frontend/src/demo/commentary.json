@@ -1,0 +1,10 @@
+{
+  "clipId": "bicycle-kick-2018",
+  "generatedBy": "placeholder, replaced by scripts/commentary",
+  "verifiedAt": "",
+  "lines": [
+    { "id": "en-essentials-001", "t": 0.5, "expires": 4, "priority": 1, "lang": "en", "detail": "essentials", "text": "Real Madrid attack toward your right ear. They lead one nil.", "evidence": ["ev_001"] },
+    { "id": "en-essentials-002", "t": 21, "expires": 24, "priority": 1, "lang": "en", "detail": "essentials", "text": "Ronaldo, overhead kick. Goal!", "evidence": ["ev_009", "ev_010"] },
+    { "id": "en-essentials-003", "t": 27, "expires": 31, "priority": 2, "lang": "en", "detail": "essentials", "text": "Juventus nil, Real Madrid two. The home fans are applauding him.", "evidence": ["ev_010", "ev_012"] }
+  ]
+}

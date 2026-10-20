@@ -1,0 +1,31 @@
+{
+  "id": "bicycle-kick-2018",
+  "title": "Ronaldo's overhead kick, Juventus v Real Madrid",
+  "competition": "UEFA Champions League quarter-final, first leg",
+  "date": "2018-04-03",
+  "venue": "Allianz Stadium, Turin",
+  "rightsNote": "A recreation from public match reports. No broadcast audio or footage used.",
+  "teams": {
+    "home": { "name": "Juventus", "short": "JUV" },
+    "away": { "name": "Real Madrid", "short": "RMA" }
+  },
+  "attacking": "away",
+  "clockStart": 3780,
+  "scoreAtStart": [0, 1],
+  "duration": 36,
+  "events": [
+    { "id": "ev_001", "t": 0, "type": "possession", "team": "away", "x": 38, "y": 50, "label": "Real Madrid have the ball in midfield, leading 1-0." },
+    { "id": "ev_002", "t": 2.5, "type": "pass", "team": "away", "x": 38, "y": 50, "endX": 50, "endY": 30, "duration": 1.0, "label": "Real Madrid pass forward, toward the far side." },
+    { "id": "ev_003", "t": 6, "type": "pass", "team": "away", "x": 50, "y": 30, "endX": 60, "endY": 58, "duration": 1.2, "label": "Real Madrid switch the ball back across the middle." },
+    { "id": "ev_004", "t": 9.5, "type": "pressure", "team": "home", "x": 60, "y": 58, "pressure": 0.6, "label": "Juventus close in on the ball." },
+    { "id": "ev_005", "t": 11, "type": "pass", "team": "away", "x": 60, "y": 58, "endX": 72, "endY": 82, "duration": 1.0, "label": "Real Madrid work it out to the right." },
+    { "id": "ev_006", "t": 14.5, "type": "pass", "team": "away", "receiver": "Dani Carvajal", "x": 72, "y": 82, "endX": 80, "endY": 90, "duration": 0.8, "label": "The ball reaches Dani Carvajal on the right." },
+    { "id": "ev_007", "t": 16, "type": "carry", "team": "away", "player": "Dani Carvajal", "x": 80, "y": 90, "endX": 84, "endY": 91, "duration": 2.0, "label": "Carvajal carries it forward down the right." },
+    { "id": "ev_008", "t": 18.5, "type": "cross", "team": "away", "player": "Dani Carvajal", "x": 84, "y": 91, "endX": 92, "endY": 50, "duration": 1.1, "label": "Carvajal crosses from the right into the box." },
+    { "id": "ev_009", "t": 19.6, "type": "overhead_kick", "team": "away", "player": "Cristiano Ronaldo", "x": 92, "y": 50, "endX": 100, "endY": 46, "duration": 0.35, "power": 0.9, "label": "Cristiano Ronaldo leaps and hits an overhead kick." },
+    { "id": "ev_010", "t": 19.95, "type": "goal", "team": "away", "player": "Cristiano Ronaldo", "x": 100, "y": 46, "score": [0, 2], "label": "Goal. Past Gianluigi Buffon. Juventus 0, Real Madrid 2." },
+    { "id": "ev_011", "t": 20.2, "type": "crowd", "mood": "surprise", "x": 50, "y": 50, "label": "The stadium gasps." },
+    { "id": "ev_012", "t": 25, "type": "crowd", "mood": "applause", "team": "home", "x": 50, "y": 50, "label": "The Juventus home fans applaud Ronaldo." },
+    { "id": "ev_013", "t": 36, "type": "end", "x": 50, "y": 50, "label": "End of the clip." }
+  ]
+}
