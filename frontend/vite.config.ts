@@ -4,6 +4,8 @@ import react from '@vitejs/plugin-react'
 import { resolve } from 'path'
 
 export default defineConfig({
+  // GitHub Pages serves the app from /Blind-side/; set VITE_BASE there.
+  base: process.env.VITE_BASE ?? '/',
   plugins: [react()],
   resolve: {
     alias: {

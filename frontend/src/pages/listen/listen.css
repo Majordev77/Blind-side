@@ -1,0 +1,333 @@
+/* Listen page: dark, high contrast, regardless of colour mode. */
+
+.ls-root {
+  --ls-bg: #0b0f14;
+  --ls-fg: #f5f7fa;
+  --ls-dim: #b8c2cc;
+  --ls-surface: #18212b;
+  --ls-border: #f5f7fa;
+  --ls-accent: #ffd400;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--ls-bg);
+  color: var(--ls-fg);
+  font-size: 1.0625rem;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.ls-root :focus-visible {
+  outline: 4px solid var(--ls-accent);
+  outline-offset: 3px;
+}
+
+.ls-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Start screen */
+.ls-start {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100dvh;
+}
+
+.ls-start-error:not(:empty) {
+  padding: 1.25rem 1rem;
+  background: var(--ls-accent);
+  color: #000;
+  font-size: 1.375rem;
+  font-weight: 700;
+}
+
+.ls-start-button {
+  flex: 1;
+  width: 100%;
+  border: 0;
+  background: var(--ls-bg);
+  color: var(--ls-fg);
+  font-size: clamp(2.25rem, 11vw, 5rem);
+  font-weight: 800;
+  line-height: 1.15;
+  padding: 1rem;
+  cursor: pointer;
+}
+
+.ls-start-button:focus-visible {
+  outline-offset: -10px;
+}
+
+/* Player */
+.ls-player {
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.ls-header p {
+  margin: 0;
+}
+
+.ls-score {
+  font-size: 1.625rem;
+  font-weight: 800;
+  line-height: 1.2;
+  margin: 0;
+}
+
+.ls-clock {
+  font-size: 1.5rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  display: flex;
+  gap: 0.75rem;
+  align-items: baseline;
+}
+
+.ls-status {
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--ls-dim);
+}
+
+.ls-meta,
+.ls-rights {
+  font-size: 0.875rem;
+  color: var(--ls-dim);
+}
+
+.ls-caption-area {
+  min-height: 9rem;
+}
+
+.ls-caption {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: var(--ls-surface);
+  color: var(--ls-fg);
+  border: 2px solid var(--ls-border);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  font-size: clamp(1.5rem, 6.5vw, 2.25rem);
+  font-weight: 700;
+  line-height: 1.25;
+  cursor: pointer;
+}
+
+.ls-caption-hint {
+  display: block;
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: var(--ls-dim);
+}
+
+.ls-event-label {
+  margin: 0;
+  padding: 1rem;
+  font-size: 1.25rem;
+  color: var(--ls-dim);
+}
+
+.ls-note,
+.ls-help {
+  margin: 0.25rem 0 0;
+  font-size: 0.9375rem;
+  color: var(--ls-dim);
+}
+
+.ls-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.ls-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.ls-row-stack {
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.ls-btn {
+  flex: 1 1 8rem;
+  min-height: 3.25rem;
+  padding: 0.5rem 1rem;
+  background: var(--ls-surface);
+  color: var(--ls-fg);
+  border: 2px solid var(--ls-border);
+  border-radius: 0.5rem;
+  font-size: 1.125rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.ls-btn-primary {
+  background: var(--ls-fg);
+  color: var(--ls-bg);
+}
+
+.ls-toggle[aria-pressed='true'] {
+  background: var(--ls-accent);
+  border-color: var(--ls-accent);
+  color: #000;
+}
+
+.ls-toggle[aria-pressed='true']::after {
+  content: ' (on)';
+}
+
+.ls-panel {
+  background: var(--ls-surface);
+  border: 2px solid var(--ls-border);
+  border-radius: 0.5rem;
+  padding: 1rem;
+}
+
+.ls-panel summary {
+  min-height: 3rem;
+  display: flex;
+  align-items: center;
+  font-size: 1.125rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.ls-evidence h2 {
+  font-size: 1.25rem;
+  font-weight: 800;
+  margin: 0 0 0.5rem;
+}
+
+.ls-evidence-line {
+  margin: 0 0 0.75rem;
+  font-style: italic;
+}
+
+.ls-evidence ul {
+  margin: 0 0 1rem;
+  padding-left: 1.25rem;
+  list-style: disc;
+}
+
+.ls-evidence li {
+  margin-bottom: 0.5rem;
+}
+
+.ls-ev-id {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.875rem;
+  color: var(--ls-dim);
+}
+
+.ls-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-top: 1rem;
+  font-weight: 700;
+}
+
+.ls-field select {
+  min-height: 3rem;
+  width: 100%;
+  padding: 0 0.75rem;
+  background: var(--ls-bg);
+  color: var(--ls-fg);
+  border: 2px solid var(--ls-border);
+  border-radius: 0.5rem;
+  font-size: 1.0625rem;
+  font-weight: 400;
+}
+
+.ls-aired {
+  list-style: none;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.ls-aired-btn {
+  width: 100%;
+  min-height: 3rem;
+  text-align: left;
+  padding: 0.5rem 0.75rem;
+  background: var(--ls-bg);
+  color: var(--ls-fg);
+  border: 1px solid var(--ls-dim);
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+
+/* 2D pitch */
+.ls-pitch-labels {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.ls-pitch-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 111 / 72;
+  border-radius: 0.25rem;
+}
+
+.ls-legend {
+  margin: 0.5rem 0 0;
+  font-size: 0.875rem;
+  color: var(--ls-dim);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.ls-swatch {
+  display: inline-block;
+  width: 0.875rem;
+  height: 0.875rem;
+  border-radius: 50%;
+  margin-left: 0.5rem;
+}
+
+.ls-swatch-away {
+  background: #fff;
+  border: 2px solid #111;
+  box-shadow: 0 0 0 1px #fff;
+}
+
+.ls-swatch-home {
+  background: #111;
+  border: 2px solid #fff;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ls-root * {
+    transition: none !important;
+    animation: none !important;
+  }
+}

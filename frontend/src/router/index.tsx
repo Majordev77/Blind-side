@@ -9,4 +9,8 @@ import { createBrowserRouter } from 'react-router-dom'
 import { routes } from './routes'
 
 export { Path, buildPath } from './paths'
-export const router = createBrowserRouter(routes)
+
+// Matches Vite's `base` (e.g. '/Blind-side/' on GitHub Pages), without the trailing slash.
+const basename = import.meta.env.BASE_URL.replace(/\/$/, '') || '/'
+
+export const router = createBrowserRouter(routes, { basename })

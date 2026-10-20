@@ -14,6 +14,7 @@ export enum Path {
   ForgotPassword = '/forgot-password',
   ResetPassword = '/reset-password/:token',
   Dashboard = '/dashboard',
+  Listen = '/listen',
   // blacksmith:path
 }
 

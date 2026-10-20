@@ -28,6 +28,9 @@ export default function HomePage() {
         <Text fontSize="lg" color="gray.500" textAlign="center" className="max-w-md">
           Your app is ready. Sign in to get started or explore the API.
         </Text>
+        <Button size="lg" colorScheme="yellow" as={Link} to={Path.Listen} className="mt-2">
+          Listen to the demo
+        </Button>
         <HStack spacing={4} className="pt-2">
           {isAuthenticated ? (
             <Button size="lg" as={Link} to={Path.Dashboard}>

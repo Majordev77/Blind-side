@@ -14,6 +14,7 @@ import { AuthLayoutWrapper } from '@/router/layouts/auth-layout'
 import { RouteErrorBoundary } from '@/router/error-boundary'
 import NotFoundPage from '@/shared/components/not-found-page'
 import { homeRoutes } from '@/pages/home'
+import { listenRoutes } from '@/pages/listen'
 import { dashboardRoutes } from '@/pages/dashboard'
 import { authRoutes } from '@/features/auth'
 // blacksmith:import
@@ -43,7 +44,7 @@ export const routes: RouteObject[] = [
   // Full-screen pages, outside MainLayout so nothing sits on top of the Start button
   {
     errorElement: <RouteErrorBoundary />,
-    children: homeRoutes,
+    children: [...homeRoutes, ...listenRoutes],
   },
 
   // App pages
