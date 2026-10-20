@@ -1,5 +1,29 @@
 # Blind side
 
+## Hackathon demo
+
+**Try it:** https://majordev77.github.io/Blind-side/. Open it on a phone, put on headphones and tap **Try the demo**.
+
+Blind Side lets a blind or low-vision fan follow football through headphones. A 3D tone follows the ball between your ears, short sounds mark passes, shots and the crowd, and a voice speaks only for what matters. The demo recreates Cristiano Ronaldo's overhead kick for Real Madrid at Juventus (Champions League quarter-final, 3 April 2018) in 36 seconds.
+
+- **Start** unlocks sound inside the tap, as iPhone Safari and Android Chrome require, and no sign-in is needed.
+- **Speakers mode** exaggerates left and right for when you have no headphones.
+- **Show me what I heard** shows the ball live on a 2D pitch, alongside the sound.
+- **Personalise** changes the commentary: English, Nigerian Pidgin or Yoruba (captions); essentials, full or analyst; and a favourite player, who gets a chime.
+- **Tap a caption** to see the match events that prove it.
+
+The commentary is AI-drafted, then checked by a deterministic verifier: `scripts/commentary/` (Editor → Narrator → Verifier). The verifier rejects any line whose names, scores or minutes it can't trace to event IDs. Run `python scripts/commentary/pipeline.py --selftest` to watch it reject wrong lines.
+
+**Rights.** This is a recreation from public match reports (sources in `docs/pitch/FACTS.md`). There is no broadcast audio, footage, crest or image. Every sound is synthesised in the browser with the Web Audio API, and the voice is the browser's own text-to-speech. The recreation lives in `frontend/src/demo/bicycle-kick-2018.json`, so it can be swapped for an invented match.
+
+**Offline:** `docs/pitch/blind-side-standalone.html` opens by double-clicking. Running it from a laptop is covered in `docs/pitch/DEMO-RUNBOOK.md`.
+
+**Where it lives:**
+- `frontend/src/pages/listen/` is the demo page.
+- `frontend/src/audio/` is the sound engine.
+- `frontend/src/demo/` holds the match data and commentary.
+- `docs/pitch/` holds the pitch script, slides, runbook and facts.
+
 ## What this is built with
 
 The whole product: an API and the screens that use it.
