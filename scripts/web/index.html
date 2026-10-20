@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blind Side</title>
+    <style>
+        html,
+        body {
+            margin: 0;
+            height: 100%;
+        }
+
+        button {
+            width: 100%;
+            height: 100%;
+            font-size: 3rem;
+        }
+    </style>
+</head>
+
+<body>
+    <button>Start</button>
+    <script>
+        const button = document.querySelector("button");
+        let ctx = null; // one shared audio engine, never two
+
+        button.addEventListener("click", async () => {
+            try {
+                if (!ctx) ctx = new AudioContext(); // created inside the tap
+                await ctx.resume();
+
+                const osc = ctx.createOscillator(); // a short beep
+                osc.frequency.value = 440;
+                osc.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.3);
+
+                button.textContent = "Playing…";
+                osc.onended = () => (button.textContent = "Start");
+            } catch (err) {
+                button.textContent = "No sound. Turn off silent mode, raise the volume, then tap again.";
+            }
+        });
+    </script>
+</body>
+
+</html>
