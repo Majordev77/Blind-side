@@ -22,6 +22,7 @@ interface Caption {
   line: CommentaryLine
   shownAt: number // clip time
   minUntil: number // clip time the caption stays up at least until
+  spoken: boolean // false when there is no voice, so screen readers announce it instead
 }
 
 function scoreAt(t: number): [number, number] {
@@ -48,6 +49,7 @@ function usePrefersReducedMotion(): boolean {
 
 export default function ListenPage() {
   const engineRef = useRef<SoundEngine | null>(null)
+  const mountedRef = useRef(false)
   const startingRef = useRef(false) // set synchronously in the tap, guards double starts
   const rafRef = useRef<number | null>(null)
 
@@ -116,7 +118,7 @@ export default function ListenPage() {
       // Caption it even when it could not be spoken.
       if (spoken) speakingIdRef.current = line.id
       const words = line.text.split(/\s+/).length
-      const c: Caption = { line, shownAt: now, minUntil: now + Math.max(2.5, words * 0.4) }
+      const c: Caption = { line, shownAt: now, minUntil: now + Math.max(2.5, words * 0.4), spoken }
       captionRef.current = c
       setCaption(c)
       setAired((prev) => [...prev, line])
@@ -137,6 +139,8 @@ export default function ListenPage() {
   const startPlayback = useCallback(() => {
     const engine = engineRef.current
     if (!engine) return
+    // Inside the Replay tap: wake the context if iOS suspended it (screen lock, a call).
+    void engine.ctx.resume().catch(() => {})
     stopLoop()
     cancelSpeech()
     engine.setDuck(false)
@@ -152,7 +156,14 @@ export default function ListenPage() {
     setEvidenceLine(null)
     setT(0)
 
-    engine.play(demoClip, { favouritePlayer: settingsRef.current.favourite || undefined })
+    try {
+      engine.play(demoClip, { favouritePlayer: settingsRef.current.favourite || undefined })
+    } catch {
+      startingRef.current = false
+      setStartError(UNLOCK_FAILED)
+      setPhase('start')
+      return
+    }
     playStartedRef.current = performance.now()
     setStatus('playing')
     rafRef.current = requestAnimationFrame(tick)
@@ -192,6 +203,7 @@ export default function ListenPage() {
       return
     }
 
+    if (!mountedRef.current) return // left the page while audio was unlocking
     setPhase('player')
     startPlayback()
   }
@@ -205,13 +217,22 @@ export default function ListenPage() {
     if (evidenceLine) evidenceHeadingRef.current?.focus()
   }, [evidenceLine])
 
-  // Stop everything when leaving the page.
+  // Stop everything when leaving the page, and close the AudioContext:
+  // iOS allows only a handful of live contexts per page.
   useEffect(() => {
+    mountedRef.current = true
     return () => {
+      mountedRef.current = false
       if (rafRef.current !== null) cancelAnimationFrame(rafRef.current)
       rafRef.current = null
       cancelSpeech()
-      engineRef.current?.stop()
+      const engine = engineRef.current
+      engineRef.current = null
+      startingRef.current = false
+      if (engine) {
+        engine.stop()
+        void engine.ctx.close().catch(() => {})
+      }
     }
   }, [])
 
@@ -277,18 +298,20 @@ export default function ListenPage() {
       </header>
 
       <section className="ls-caption-area" aria-label="Commentary">
-        <div aria-live="polite" aria-atomic="true">
-          {caption && (
-            <button
-              type="button"
-              className="ls-caption"
-              onClick={(e) => openEvidence(caption.line, e.currentTarget)}
-            >
-              {caption.line.text}
-              <span className="ls-caption-hint">Tap to see why we can say this</span>
-            </button>
-          )}
+        {/* Announce only lines the voice could not speak, so screen readers don't repeat it. */}
+        <div className="ls-sr-only" aria-live="polite" aria-atomic="true">
+          {caption && !caption.spoken ? caption.line.text : ''}
         </div>
+        {caption && (
+          <button
+            type="button"
+            className="ls-caption"
+            onClick={(e) => openEvidence(caption.line, e.currentTarget)}
+          >
+            {caption.line.text}
+            <span className="ls-caption-hint">Tap to see why we can say this</span>
+          </button>
+        )}
         {!caption && currentEvent && <p className="ls-event-label">{currentEvent.label}</p>}
         {fallbackNote && <p className="ls-note">{fallbackNote}</p>}
       </section>
