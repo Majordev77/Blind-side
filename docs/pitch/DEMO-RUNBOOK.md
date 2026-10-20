@@ -36,4 +36,53 @@ Pitch 10:00 WAT. Do this checklist from 09:15. Script: `PITCH.md`.
 
 ## Commands
 
-TODO (tech lead): exact commands for the live URL, `vite preview --host`, and opening the standalone HTML.
+Three ways to run the demo. Use them in this order: if one fails, move to the next.
+
+### 1. The live link (normal case)
+
+- Landing page: **https://majordev77.github.io/Blind-side/**
+- Demo directly: **https://majordev77.github.io/Blind-side/listen**
+
+The capital **B** in `Blind-side` matters. Open the link once before you go on stage, so the page is already loaded. After it has loaded once, the demo itself needs no network: everything is in the page.
+
+### 2. Your laptop serves it to your phone (venue Wi-Fi is down)
+
+This runs the built app on your laptop and opens it on your phone over your phone's hotspot. Do it once tonight to practise.
+
+1. Turn on your phone's **hotspot** and connect the laptop to it.
+2. In VS Code, open a terminal (**Terminal → New Terminal**, PowerShell) and run:
+
+   ```powershell
+   cd "C:\Users\BUKOLA KAYODE-OJO\blind-side\frontend"
+   npm run build
+   npx vite preview --host --port 4173
+   ```
+
+   `npm run build` makes the production files in `frontend/dist`. `vite preview --host` serves them to other devices on the same network, not just this laptop.
+3. The terminal prints two addresses. Use the **Network** one, for example `http://10.178.91.174:4173/`. Your number will differ on the hotspot. On your phone, open that address followed by `listen`, for example `http://10.178.91.174:4173/listen`.
+4. If Windows asks whether Node.js may use the network, choose **Private networks** and **Allow**.
+5. Press **Ctrl+C** in the terminal to stop it.
+
+If the phone can't reach it, the hotspot may be blocking devices from talking to each other. Use option 3 instead.
+
+### 3. The single offline file (no network at all)
+
+- File: `C:\Users\BUKOLA KAYODE-OJO\blind-side\docs\pitch\blind-side-standalone.html`
+- Double-click it in File Explorer. It opens in your browser with no network, and all the code is inside the file.
+- To put it on your phone, send the file to yourself (USB cable, Bluetooth, or a message to yourself) and open it in Chrome (Android) or Files → Safari (iPhone). **Test this tonight.** Some phones won't open local HTML files well, so the laptop is the safer place for this file.
+- If anyone changes the app or commentary, rebuild the file:
+
+  ```powershell
+  cd "C:\Users\BUKOLA KAYODE-OJO\blind-side\frontend"
+  npm run build:standalone
+  ```
+
+### Regenerating the commentary (only if you change a line)
+
+```powershell
+cd "C:\Users\BUKOLA KAYODE-OJO\blind-side"
+python scripts/commentary/pipeline.py            # Editor, Narrator, Verifier → frontend/src/demo/commentary.json
+python scripts/commentary/pipeline.py --selftest # shows the verifier rejecting wrong lines (good for judges)
+```
+
+To change a line, edit `scripts/commentary/drafts.json`, run the pipeline, and read `scripts/commentary/last-run.md` to confirm the verifier accepted it. Then rebuild (option 2 or 3) or push to redeploy the live link.
