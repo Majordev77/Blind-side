@@ -16,15 +16,15 @@
   "events": [
     { "id": "ev_001", "t": 0, "type": "possession", "team": "away", "x": 38, "y": 50, "label": "Real Madrid have the ball in midfield, leading 1-0." },
     { "id": "ev_002", "t": 2.5, "type": "pass", "team": "away", "x": 38, "y": 50, "endX": 50, "endY": 30, "duration": 1.0, "label": "Real Madrid pass forward, toward the far side." },
-    { "id": "ev_003", "t": 6, "type": "pass", "team": "away", "x": 50, "y": 30, "endX": 60, "endY": 58, "duration": 1.2, "label": "Real Madrid switch the ball back across the middle." },
-    { "id": "ev_004", "t": 9.5, "type": "pressure", "team": "home", "x": 60, "y": 58, "pressure": 0.6, "label": "Juventus close in on the ball." },
-    { "id": "ev_005", "t": 11, "type": "pass", "team": "away", "x": 60, "y": 58, "endX": 72, "endY": 82, "duration": 1.0, "label": "Real Madrid work it out to the right." },
+    { "id": "ev_003", "t": 6, "type": "pass", "team": "away", "x": 50, "y": 30, "endX": 84, "endY": 56, "duration": 1.4, "label": "Real Madrid get the ball into the Juventus box, and Juventus cannot clear." },
+    { "id": "ev_004", "t": 9.5, "type": "shot", "team": "away", "player": "Lucas Vázquez", "x": 86, "y": 56, "endX": 99, "endY": 50, "duration": 0.4, "power": 0.6, "label": "Lucas Vázquez shoots from close range, and Gianluigi Buffon saves." },
+    { "id": "ev_005", "t": 11, "type": "pass", "team": "away", "x": 97, "y": 52, "endX": 72, "endY": 82, "duration": 1.6, "label": "The ball runs loose, and Real Madrid keep it out on the right." },
     { "id": "ev_006", "t": 14.5, "type": "pass", "team": "away", "receiver": "Dani Carvajal", "x": 72, "y": 82, "endX": 80, "endY": 90, "duration": 0.8, "label": "The ball reaches Dani Carvajal on the right." },
-    { "id": "ev_007", "t": 16, "type": "carry", "team": "away", "player": "Dani Carvajal", "x": 80, "y": 90, "endX": 84, "endY": 91, "duration": 2.0, "label": "Carvajal carries it forward down the right." },
-    { "id": "ev_008", "t": 18.5, "type": "cross", "team": "away", "player": "Dani Carvajal", "x": 84, "y": 91, "endX": 92, "endY": 50, "duration": 1.1, "label": "Carvajal crosses from the right into the box." },
-    { "id": "ev_009", "t": 19.6, "type": "overhead_kick", "team": "away", "player": "Cristiano Ronaldo", "x": 92, "y": 50, "endX": 100, "endY": 46, "duration": 0.35, "power": 0.9, "label": "Cristiano Ronaldo leaps and hits an overhead kick." },
+    { "id": "ev_007", "t": 16, "type": "carry", "team": "away", "player": "Dani Carvajal", "x": 80, "y": 90, "endX": 84, "endY": 91, "duration": 2.0, "label": "Carvajal steadies it on the right." },
+    { "id": "ev_008", "t": 18.5, "type": "cross", "team": "away", "player": "Dani Carvajal", "x": 84, "y": 91, "endX": 92, "endY": 50, "duration": 1.1, "label": "Carvajal floats a cross in from the right." },
+    { "id": "ev_009", "t": 19.6, "type": "overhead_kick", "team": "away", "player": "Cristiano Ronaldo", "x": 92, "y": 50, "endX": 100, "endY": 46, "duration": 0.35, "power": 0.9, "label": "Cristiano Ronaldo leaps with his back to goal and hits an overhead kick." },
     { "id": "ev_010", "t": 19.95, "type": "goal", "team": "away", "player": "Cristiano Ronaldo", "x": 100, "y": 46, "score": [0, 2], "label": "Goal. Past Gianluigi Buffon. Juventus 0, Real Madrid 2." },
-    { "id": "ev_011", "t": 20.2, "type": "crowd", "mood": "surprise", "x": 50, "y": 50, "label": "The stadium gasps." },
+    { "id": "ev_011", "t": 20.2, "type": "crowd", "mood": "surprise", "x": 50, "y": 50, "label": "A split second of stunned silence in the stadium." },
     { "id": "ev_012", "t": 25, "type": "crowd", "mood": "applause", "team": "home", "x": 50, "y": 50, "label": "The Juventus home fans applaud Ronaldo." },
     { "id": "ev_013", "t": 36, "type": "end", "x": 50, "y": 50, "label": "End of the clip." }
   ]
