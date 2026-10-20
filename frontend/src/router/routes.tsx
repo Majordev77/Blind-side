@@ -21,9 +21,7 @@ import { authRoutes } from '@/features/auth'
 /**
  * Public routes — accessible without authentication.
  */
-const publicRoutes: RouteObject[] = [
-  ...homeRoutes,
-]
+const publicRoutes: RouteObject[] = []
 
 /**
  * Private routes — wrapped in AuthGuard, requires authentication.
@@ -40,6 +38,12 @@ export const routes: RouteObject[] = [
     element: <AuthLayoutWrapper />,
     errorElement: <RouteErrorBoundary />,
     children: authRoutes,
+  },
+
+  // Full-screen pages, outside MainLayout so nothing sits on top of the Start button
+  {
+    errorElement: <RouteErrorBoundary />,
+    children: homeRoutes,
   },
 
   // App pages
