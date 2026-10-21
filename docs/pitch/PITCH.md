@@ -58,7 +58,7 @@ We're asking for two things: introductions to blind associations and football da
 ## Judge questions
 
 **Is this real match audio?**
-No. Every sound is made in code in the browser, and the voice is the phone's own text-to-speech. We rebuilt the play from public match reports, used only details at least two reports agree on, and the app says so on screen. No broadcast audio, footage or crests.
+No. Every sound is made in code in the browser, and the voice is the phone's own text-to-speech. We rebuilt the play from public match reports, used only details at least two reports agree on, and the app says so on screen. The video you saw is Real Madrid's own official upload, played muted through YouTube's embedded player, so we copy nothing. All the sound and commentary are ours.
 
 **How does the AI avoid mistakes?**
 Each event has an ID. The AI writes lines, and a separate verifier script, with no AI in it, rejects any line that names a player, score or action it can't trace to those event IDs. A rejected line falls back to a plain template. You can tap any caption to see the events behind it.

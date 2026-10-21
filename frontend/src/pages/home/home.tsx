@@ -154,8 +154,9 @@ export default function HomePage() {
       <footer className="hm-footer">
         <div className="hm-wrap">
           <p>
-            A recreation from public match reports. No broadcast audio or footage used. Real names describe a historical
-            match.
+            Sound and commentary are our own recreation from public match reports. The demo's video is Real Madrid's
+            official upload, played muted in YouTube's own player; nothing is downloaded or copied. Real names describe a
+            historical match.
           </p>
           <p>Built for the Talent Nation AI Rebuild Challenge, October 2026.</p>
           {/* The hosted demo has no backend, so sign-in only shows when running locally. */}

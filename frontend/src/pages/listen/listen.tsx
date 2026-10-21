@@ -4,14 +4,15 @@
  * One full-screen Start button that unlocks audio inside the tap, then
  * plays the demo clip: 3D sound from the SoundEngine, spoken commentary
  * from speechSynthesis, a large live caption and an optional 2D pitch.
- * No sign-in and no network calls.
+ * No sign-in. The only network use is the optional official video embed;
+ * the sound and commentary are bundled and work offline.
  */
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { SoundEngine, primeSpeech, speak, cancelSpeech, isSpeaking } from '@/audio'
 import { demoClip, demoCommentary, clockText, eventAt, type CommentaryLine, type Detail, type Lang } from '@/demo'
 import { PitchView } from './pitch-view'
-import { WatchAlongPanel, WatchAlongVideo, useWatchAlong } from './watch-along'
+import { WatchAlongFilePicker, WatchAlongSync, WatchAlongVideo, useWatchAlong } from './watch-along'
 import { DETAIL_LABELS, FAVOURITES, LANG_LABELS, selectLines, type Settings } from './commentary'
 import './listen.css'
 
@@ -81,9 +82,8 @@ export default function ListenPage() {
   const playerHeadingRef = useRef<HTMLHeadingElement>(null)
   const reducedMotion = usePrefersReducedMotion()
 
-  // Watch along: the user's own video, muted, kept in sync with clipTime.
+  // Watch along: the official video (or the user's own), muted, kept in sync with clipTime.
   const wa = useWatchAlong()
-  const [watchAlong, setWatchAlong] = useState(false)
   const lastDriftCheckRef = useRef(0)
 
   const stopLoop = useCallback(() => {
@@ -101,17 +101,24 @@ export default function ListenPage() {
       rafRef.current = null
       setT((prev) => Math.max(prev, Math.min(now || prev, demoClip.duration)))
       setStatus('finished')
-      wa.videoRef.current?.pause()
+      wa.pauseAll()
       return
     }
 
-    // Keep the user's video in step with our clock, checked about once a second.
-    const video = wa.videoRef.current
+    // Keep the video in step with our clock, checked about once a second. A video
+    // that is not playing (it became ready late, or was un-hidden) is started at the
+    // right point; muted playback needs no tap.
+    const video = wa.getPlayer()
     const nowMs = performance.now()
-    if (video && !video.paused && now > 0 && nowMs - lastDriftCheckRef.current > 1000) {
+    if (video && now > 0 && nowMs - lastDriftCheckRef.current > 1000) {
       lastDriftCheckRef.current = nowMs
       const target = wa.offsetRef.current + now
-      if (Math.abs(video.currentTime - target) > 0.25) video.currentTime = target
+      if (video.paused) {
+        video.seek(target)
+        video.play()
+      } else if (video.playing && Math.abs(video.currentTime - target) > video.driftThreshold) {
+        video.seek(target)
+      }
     }
 
     // Commentary: lines in time order, each handled at most once per play.
@@ -150,7 +157,7 @@ export default function ListenPage() {
 
     setT(now)
     rafRef.current = requestAnimationFrame(tick)
-  }, [wa.videoRef, wa.offsetRef])
+  }, [wa.getPlayer, wa.offsetRef])
 
   const startPlayback = useCallback(() => {
     const engine = engineRef.current
@@ -175,7 +182,7 @@ export default function ListenPage() {
     try {
       engine.play(demoClip, { favouritePlayer: settingsRef.current.favourite || undefined })
     } catch {
-      wa.videoRef.current?.pause()
+      wa.pauseAll()
       startingRef.current = false
       setStartError(UNLOCK_FAILED)
       setPhase('start')
@@ -184,7 +191,7 @@ export default function ListenPage() {
     playStartedRef.current = performance.now()
     setStatus('playing')
     rafRef.current = requestAnimationFrame(tick)
-  }, [stopLoop, tick, wa.videoRef])
+  }, [stopLoop, tick, wa.pauseAll])
 
   const handleStop = useCallback(() => {
     stopLoop()
@@ -192,19 +199,24 @@ export default function ListenPage() {
     speakingIdRef.current = null
     engineRef.current?.stop()
     engineRef.current?.setDuck(false)
-    wa.videoRef.current?.pause()
+    wa.pauseAll()
     setStatus('stopped')
-  }, [stopLoop, wa.videoRef])
+  }, [stopLoop, wa.pauseAll])
 
-  // Same path as Replay, plus the video. All synchronous inside the tap:
-  // the video is muted, so play() is allowed; startPlayback resumes the AudioContext.
-  const handlePlayTogether = () => {
-    const video = wa.videoRef.current
+  // Start the video at clip t = 0, synchronously inside the tap. It is muted, so
+  // play() is allowed (iOS too). Not ready yet? The loop starts it once it is.
+  const startVideo = () => {
+    const video = wa.getPlayer()
     if (video) {
-      video.currentTime = wa.offsetRef.current
-      void video.play().catch(() => {})
+      video.seek(wa.offsetRef.current)
+      video.play()
     }
     lastDriftCheckRef.current = performance.now()
+  }
+
+  // Replay: restarts the video and the sound together.
+  const handleReplay = () => {
+    startVideo()
     startPlayback()
   }
 
@@ -220,14 +232,23 @@ export default function ListenPage() {
       engineRef.current = engine
       primeSpeech()
     } catch {
+      wa.pauseAll()
       startingRef.current = false
       setStartError(UNLOCK_FAILED)
       return
     }
 
+    // A video problem must never stop the sound.
+    try {
+      startVideo()
+    } catch {
+      wa.pauseAll()
+    }
+
     try {
       await engine.unlock()
     } catch {
+      wa.pauseAll()
       startingRef.current = false
       setStartError(UNLOCK_FAILED)
       return
@@ -284,9 +305,23 @@ export default function ListenPage() {
     else playerHeadingRef.current?.focus()
   }
 
+  // The video area keeps the same place in the tree in both phases, so the
+  // YouTube player created behind the Start screen survives the switch.
+  const mediaTwo = phase === 'player' && wa.visible && showPitch
+  const media = (
+    <div
+      key="media"
+      className={`ls-media${phase === 'start' ? ' ls-media-preload' : ''}${mediaTwo ? ' ls-media-two' : ''}`}
+    >
+      <WatchAlongVideo wa={wa} active={phase === 'player'} />
+      {mediaTwo && <PitchView clip={demoClip} t={t} reducedMotion={reducedMotion} />}
+    </div>
+  )
+
   if (phase === 'start') {
     return (
       <main className="ls-root ls-start">
+        {media}
         <div role="alert" className="ls-start-error">
           {startError}
         </div>
@@ -310,6 +345,7 @@ export default function ListenPage() {
 
   return (
     <main className="ls-root ls-player">
+      {media}
       <header className="ls-header">
         <h1 ref={playerHeadingRef} tabIndex={-1} className="ls-score">
           {demoClip.teams.home.name} {home} – {away} {demoClip.teams.away.name}
@@ -326,13 +362,6 @@ export default function ListenPage() {
         </p>
         <p className="ls-rights">{demoClip.rightsNote}</p>
       </header>
-
-      {watchAlong && wa.src && (
-        <div className={`ls-media${showPitch ? ' ls-media-two' : ''}`}>
-          <WatchAlongVideo wa={wa} />
-          {showPitch && <PitchView clip={demoClip} t={t} reducedMotion={reducedMotion} />}
-        </div>
-      )}
 
       <section className="ls-caption-area" aria-label="Commentary">
         {/* Announce only lines the voice could not speak, so screen readers don't repeat it. */}
@@ -380,7 +409,7 @@ export default function ListenPage() {
           <button
             type="button"
             className="ls-btn ls-btn-primary"
-            onClick={() => (wa.videoRef.current ? handlePlayTogether() : startPlayback())}
+            onClick={handleReplay}
           >
             Replay
           </button>
@@ -402,10 +431,10 @@ export default function ListenPage() {
           <button
             type="button"
             className="ls-btn ls-toggle"
-            aria-pressed={watchAlong}
-            onClick={() => setWatchAlong((v) => !v)}
+            aria-pressed={wa.hidden}
+            onClick={() => wa.setHidden(!wa.hidden)}
           >
-            Watch along
+            Hide video
           </button>
         </div>
         <div className="ls-row ls-row-stack">
@@ -424,9 +453,9 @@ export default function ListenPage() {
         </div>
       </section>
 
-      {watchAlong && <WatchAlongPanel wa={wa} onPlayTogether={handlePlayTogether} />}
+      <WatchAlongSync wa={wa} />
 
-      {showPitch && !(watchAlong && wa.src) && <PitchView clip={demoClip} t={t} reducedMotion={reducedMotion} />}
+      {showPitch && !mediaTwo && <PitchView clip={demoClip} t={t} reducedMotion={reducedMotion} />}
 
       <details className="ls-panel ls-personalise">
         <summary>Personalise</summary>
@@ -476,6 +505,7 @@ export default function ListenPage() {
             ))}
           </select>
         </label>
+        <WatchAlongFilePicker wa={wa} />
       </details>
 
       {aired.length > 0 && (

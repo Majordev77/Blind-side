@@ -4,7 +4,7 @@
   "competition": "UEFA Champions League quarter-final, first leg",
   "date": "2018-04-03",
   "venue": "Allianz Stadium, Turin",
-  "rightsNote": "A recreation from public match reports. No broadcast audio or footage used.",
+  "rightsNote": "Sound and commentary are our own recreation from public match reports. The video is Real Madrid's official upload, played muted in YouTube's own player.",
   "teams": {
     "home": { "name": "Juventus", "short": "JUV" },
     "away": { "name": "Real Madrid", "short": "RMA" }
@@ -13,6 +13,7 @@
   "clockStart": 3780,
   "scoreAtStart": [0, 1],
   "duration": 36,
+  "officialVideo": { "provider": "youtube", "id": "c_JlCriK3fY", "channel": "Real Madrid", "title": "Cristiano Ronaldo's amazing bicycle kick! | Juventus 0-3 Real Madrid | Champions League (2017/18)", "offset": 0 },
   "events": [
     { "id": "ev_001", "t": 0, "type": "possession", "team": "away", "x": 38, "y": 50, "label": "Real Madrid have the ball in midfield, leading 1-0." },
     { "id": "ev_002", "t": 2.5, "type": "pass", "team": "away", "x": 38, "y": 50, "endX": 50, "endY": 30, "duration": 1.0, "label": "Real Madrid pass forward, toward the far side." },

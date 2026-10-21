@@ -32,7 +32,7 @@ Eight slides. Big type, high contrast, no club crests, no match photos. Slide 3 
 **Close your eyes.**
 
 - Ronaldo's overhead kick, Juventus v Real Madrid, 3 April 2018
-- A recreation from public match reports. No broadcast audio or footage used.
+- Sound and commentary: our own recreation from public match reports. Video: Real Madrid's official upload, played muted in YouTube's player.
 
 *Speaker notes:* Speakers mode is already on. Tap Start, stay silent for 36 seconds. Then Show me what I heard, Replay, then Personalise (Pidgin, Analyst, Ronaldo) and tap a caption for the evidence.
 

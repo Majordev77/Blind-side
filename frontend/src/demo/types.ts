@@ -48,6 +48,14 @@ export interface Team {
   short: string
 }
 
+export interface OfficialVideo {
+  provider: 'youtube'
+  id: string // YouTube video id
+  channel: string // channel display name, e.g. "Real Madrid"
+  title: string
+  offset: number // video time in seconds that matches clip t = 0
+}
+
 export interface MatchClip {
   id: string
   title: string
@@ -61,6 +69,8 @@ export interface MatchClip {
   scoreAtStart: [number, number]
   duration: number // seconds
   events: MatchEvent[]
+  /** Optional official upload shown with the provider's own embedded player. Delete to switch off. */
+  officialVideo?: OfficialVideo
 }
 
 export type Lang = 'en' | 'pcm' | 'yo'

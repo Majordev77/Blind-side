@@ -14,7 +14,7 @@ Blind Side lets a blind or low-vision fan follow football through headphones. A 
 
 The commentary is AI-drafted, then checked by a deterministic verifier: `scripts/commentary/` (Editor → Narrator → Verifier). The verifier rejects any line whose names, scores or minutes it can't trace to event IDs. Run `python scripts/commentary/pipeline.py --selftest` to watch it reject wrong lines.
 
-**Rights.** This is a recreation from public match reports (sources in `docs/pitch/FACTS.md`). There is no broadcast audio, footage, crest or image. Every sound is synthesised in the browser with the Web Audio API, and the voice is the browser's own text-to-speech. The recreation lives in `frontend/src/demo/bicycle-kick-2018.json`, so it can be swapped for an invented match.
+**Rights.** The sound and commentary are a recreation from public match reports (sources in `docs/pitch/FACTS.md`). The video on the demo page is Real Madrid's official upload, embedded with YouTube's own player and muted: nothing is downloaded, copied or committed, and it needs internet. Delete `officialVideo` from the clip JSON to switch it off (the Microsoft hackathon build must). There is no broadcast audio, crest or image. Every sound is synthesised in the browser with the Web Audio API, and the voice is the browser's own text-to-speech. The recreation lives in `frontend/src/demo/bicycle-kick-2018.json`, so it can be swapped for an invented match.
 
 **Offline:** `docs/pitch/blind-side-standalone.html` opens by double-clicking. Running it from a laptop is covered in `docs/pitch/DEMO-RUNBOOK.md`.
 

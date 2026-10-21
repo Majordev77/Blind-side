@@ -26,6 +26,16 @@
   font-weight: 800;
 }
 
+.wa-file-area {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--ls-dim);
+}
+
+.wa-panel summary + * {
+  margin-top: 0.5rem;
+}
+
 .wa-file input[type='file'] {
   width: 100%;
   min-height: 3rem;
@@ -96,13 +106,114 @@
   margin-top: 0.75rem;
 }
 
-/* Wide screens: video and pitch side by side, breaking out of the narrow column. */
+/* Start screen: the player loads off screen so it is ready before the tap. */
+.ls-media-preload,
+.wa-offscreen {
+  position: absolute !important;
+  left: -10000px;
+  top: 0;
+  width: 320px;
+  height: 180px;
+  overflow: hidden;
+}
+
+/* Wide screens: video and pitch side by side. The column widens; text stays narrow.
+   No 100vw breakout, so there is never a horizontal scrollbar. */
 @media (min-width: 900px) {
+  .ls-player:has(.ls-media-two) {
+    max-width: 72rem;
+  }
+
+  .ls-player:has(.ls-media-two) > :not(.ls-media) {
+    width: 100%;
+    max-width: 40rem;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
   .ls-media-two {
-    --wa-width: min(calc(100vw - 2rem), 72rem);
-    width: var(--wa-width);
-    margin-left: calc((100% - var(--wa-width)) / 2);
-    grid-template-columns: 1fr 1fr;
+    width: 100%;
+    max-width: 100%;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     align-items: start;
   }
+}
+
+/* Official video (YouTube embedded player) */
+.wa-official {
+  margin: 0;
+}
+
+.wa-yt {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #000;
+  border: 2px solid var(--ls-border);
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.wa-yt iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.wa-yt-loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 1rem;
+  color: var(--ls-dim);
+  text-align: center;
+}
+
+.wa-offline {
+  margin: 0;
+  padding: 1rem;
+  background: var(--ls-surface);
+  border: 2px solid var(--ls-accent);
+  border-radius: 0.5rem;
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+
+.wa-attribution {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--ls-dim);
+}
+
+.wa-attribution a {
+  color: var(--ls-fg);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.wa-source {
+  margin: 0 0 1rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--ls-dim);
+  border-radius: 0.5rem;
+  min-width: 0;
+}
+
+.wa-source legend {
+  padding: 0 0.25rem;
+  font-weight: 700;
+}
+
+.wa-source .wa-check {
+  margin-top: 0.25rem;
+}
+
+.wa-saved {
+  margin: 0.25rem 0 0;
+  font-size: 1.125rem;
 }
