@@ -1,0 +1,108 @@
+/* Watch along: the user's own video next to the Blind Side player. */
+
+.ls-media {
+  display: grid;
+  gap: 1rem;
+}
+
+.wa-video-wrap {
+  background: #000;
+  border: 2px solid var(--ls-border);
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.wa-video {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 70vh;
+  background: #000;
+}
+
+.wa-title {
+  margin: 0 0 0.5rem;
+  font-size: 1.25rem;
+  font-weight: 800;
+}
+
+.wa-file input[type='file'] {
+  width: 100%;
+  min-height: 3rem;
+  padding: 0.5rem;
+  background: var(--ls-bg);
+  color: var(--ls-fg);
+  border: 2px solid var(--ls-border);
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-weight: 400;
+}
+
+.wa-check {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 3rem;
+  margin-top: 0.75rem;
+  cursor: pointer;
+}
+
+.wa-check input {
+  width: 1.5rem;
+  height: 1.5rem;
+  accent-color: var(--ls-accent);
+}
+
+.wa-sync {
+  margin: 1rem 0;
+  padding: 0.75rem 1rem 1rem;
+  border: 1px solid var(--ls-dim);
+  border-radius: 0.5rem;
+  min-width: 0;
+}
+
+.wa-sync legend {
+  padding: 0 0.25rem;
+  font-weight: 700;
+}
+
+.wa-offset {
+  margin-top: 0.25rem;
+}
+
+.wa-offset input {
+  min-height: 3rem;
+  width: 100%;
+  max-width: 12rem;
+  padding: 0 0.75rem;
+  background: var(--ls-bg);
+  color: var(--ls-fg);
+  border: 2px solid var(--ls-border);
+  border-radius: 0.5rem;
+  font-size: 1.25rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.wa-nudges {
+  margin-top: 0.75rem;
+}
+
+.wa-nudges .ls-btn {
+  flex: 1 1 4.5rem;
+}
+
+.wa-wide {
+  width: 100%;
+  margin-top: 0.75rem;
+}
+
+/* Wide screens: video and pitch side by side, breaking out of the narrow column. */
+@media (min-width: 900px) {
+  .ls-media-two {
+    --wa-width: min(calc(100vw - 2rem), 72rem);
+    width: var(--wa-width);
+    margin-left: calc((100% - var(--wa-width)) / 2);
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+  }
+}

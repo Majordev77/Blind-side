@@ -43,3 +43,11 @@ Thumbs.db
 
 # Offline demo build output
 dist-standalone
+
+# Local videos for watch-along, never commit
+*.mp4
+*.mov
+*.webm
+*.mkv
+*.m4v
+*.avi
