@@ -214,10 +214,32 @@ export default function ListenPage() {
     lastDriftCheckRef.current = performance.now()
   }
 
-  // Replay: restarts the video and the sound together.
+  // Replay: restarts the video and the sound together (and leaves Tap to sync).
   const handleReplay = () => {
-    startVideo()
+    wa.endSync()
+    // A video problem must never stop the sound.
+    try {
+      startVideo()
+    } catch {
+      wa.pauseAll()
+    }
     startPlayback()
+  }
+
+  // Tap to sync: stop our sound and speech so it is clean, then play the video from 0.
+  const handleStartSync = () => {
+    handleStop()
+    wa.beginSync()
+  }
+
+  const handleSyncDone = () => {
+    handleReplay()
+    playerHeadingRef.current?.focus()
+  }
+
+  const openSync = () => {
+    if (wa.canTapSync) handleStartSync()
+    else wa.setPanelOpen(true)
   }
 
   const handleStart = async () => {
@@ -343,9 +365,13 @@ export default function ListenPage() {
     timeZone: 'UTC',
   })
 
+  const syncPanel = <WatchAlongSync wa={wa} onStartSync={handleStartSync} onSyncDone={handleSyncDone} />
+
   return (
     <main className="ls-root ls-player">
       {media}
+      {/* While tapping to sync, the panel sits right under the video. */}
+      {wa.syncing && syncPanel}
       <header className="ls-header">
         <h1 ref={playerHeadingRef} tabIndex={-1} className="ls-score">
           {demoClip.teams.home.name} {home} – {away} {demoClip.teams.away.name}
@@ -437,6 +463,24 @@ export default function ListenPage() {
             Hide video
           </button>
         </div>
+        {wa.available && !wa.syncing && (
+          <div className="ls-row ls-row-stack">
+            <button
+              type="button"
+              className="ls-btn"
+              aria-controls="wa-sync-panel"
+              aria-describedby="ls-sync-help"
+              onClick={openSync}
+            >
+              Sync the video
+            </button>
+            <p id="ls-sync-help" className="ls-help">
+              {wa.canTapSync
+                ? 'Stops the sound so you can tap three moments in the video.'
+                : 'Opens the video sync settings.'}
+            </p>
+          </div>
+        )}
         <div className="ls-row ls-row-stack">
           <button
             type="button"
@@ -453,7 +497,7 @@ export default function ListenPage() {
         </div>
       </section>
 
-      <WatchAlongSync wa={wa} />
+      {!wa.syncing && syncPanel}
 
       {showPitch && !mediaTwo && <PitchView clip={demoClip} t={t} reducedMotion={reducedMotion} />}
 

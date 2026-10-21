@@ -23,6 +23,17 @@ const OFFSET_KEYS: Record<VideoSource, string> = {
   official: 'blind-side:watch-along-offset:official',
 }
 const DEFAULT_OFFSET: Record<VideoSource, number> = { file: 0, official: official?.offset ?? 0 }
+/** Moments the user taps in "Tap to sync", each tied to one of our clip's events. */
+export type SyncMoment = 'save' | 'cross' | 'kick'
+const SYNC_MOMENTS: { key: SyncMoment; label: string; eventId: string }[] = [
+  { key: 'save', label: 'Buffon saves', eventId: 'ev_004' },
+  { key: 'cross', label: 'Carvajal crosses', eventId: 'ev_008' },
+  { key: 'kick', label: 'Ronaldo kicks', eventId: 'ev_009' },
+]
+const KICK_T = demoClip.events.find((e) => e.id === 'ev_009')?.t ?? 19.6
+type SyncTaps = Record<SyncMoment, number | null>
+const NO_TAPS: SyncTaps = { save: null, cross: null, kick: null }
+
 const OFFLINE_MESSAGE = "The official video needs an internet connection. Blind Side's sound works without it."
 const IFRAME_TITLE = "Official video: Ronaldo's overhead kick, muted"
 
@@ -80,6 +91,19 @@ export interface WatchAlong {
   showControls: boolean
   setShowControls: (v: boolean) => void
   chooseFile: (file: File | null) => void
+  /** The "Adjust video sync" disclosure is open. */
+  panelOpen: boolean
+  setPanelOpen: (v: boolean) => void
+  /** Tap to sync works for the official video only. */
+  canTapSync: boolean
+  /** In "Tap to sync" mode: our playback is stopped and the video plays from 0. */
+  syncing: boolean
+  /** Call after stopping Blind Side playback, inside the tap. */
+  beginSync: () => void
+  endSync: () => void
+  taps: SyncTaps
+  /** Records the video time for a moment; returns it, or null if no video is ready. */
+  recordTap: (m: SyncMoment) => number | null
 }
 
 /** State for watch-along. The offset is the video time that matches clip t = 0. */
@@ -95,6 +119,9 @@ export function useWatchAlong(): WatchAlong {
     official: loadOffset('official'),
   }))
   const [showControls, setShowControls] = useState(false)
+  const [panelOpen, setPanelOpen] = useState(false)
+  const [syncing, setSyncing] = useState(false)
+  const [taps, setTaps] = useState<SyncTaps>(NO_TAPS)
 
   const offset = overrides[source] ?? DEFAULT_OFFSET[source]
   const offsetRef = useRef(offset)
@@ -119,6 +146,7 @@ export function useWatchAlong(): WatchAlong {
       pauseAll()
       sourceRef.current = s
       setSourceState(s)
+      setSyncing(false)
     },
     [pauseAll],
   )
@@ -152,6 +180,45 @@ export function useWatchAlong(): WatchAlong {
     if (sourceRef.current === 'official') return ytRef.current ? fromYouTube(ytRef.current) : null
     return videoRef.current ? fromVideoElement(videoRef.current) : null
   }, [])
+
+  const beginSync = useCallback(() => {
+    if (sourceRef.current !== 'official') return
+    hiddenRef.current = false
+    setHiddenState(false)
+    setPanelOpen(true)
+    setSyncing(true)
+    // Muted, so play() is allowed inside the tap (iOS too).
+    try {
+      const p = ytRef.current
+      if (p) {
+        p.seekTo(0, true)
+        p.mute()
+        p.playVideo()
+      }
+    } catch {
+      // player gone: the panel says the video is not ready
+    }
+  }, [])
+
+  const endSync = useCallback(() => setSyncing(false), [])
+
+  const recordTap = useCallback(
+    (m: SyncMoment): number | null => {
+      let time: number
+      try {
+        const p = ytRef.current
+        if (!p || sourceRef.current !== 'official') return null
+        time = p.getCurrentTime()
+      } catch {
+        return null
+      }
+      if (!Number.isFinite(time)) return null
+      setTaps((prev) => ({ ...prev, [m]: time }))
+      if (m === 'kick') setOffset(Math.max(0, time - KICK_T))
+      return time
+    },
+    [setOffset],
+  )
 
   const srcRef = useRef<string | null>(null)
   const chooseFile = useCallback(
@@ -198,6 +265,14 @@ export function useWatchAlong(): WatchAlong {
     showControls,
     setShowControls,
     chooseFile,
+    panelOpen,
+    setPanelOpen,
+    canTapSync: source === 'official' && !!official && ytState !== 'failed',
+    syncing,
+    beginSync,
+    endSync,
+    taps,
+    recordTap,
   }
 }
 
@@ -317,16 +392,160 @@ export function WatchAlongVideo({ wa, active }: { wa: WatchAlong; active: boolea
   )
 }
 
+const tapText = (v: number | null) => (v === null ? '-' : v.toFixed(1))
+
+/** The code Korede sends to the tech lead: save=XX.X cross=YY.Y kick=ZZ.Z offset=OO.O */
+function resultCode(taps: SyncTaps): string {
+  const offset = taps.kick === null ? null : round1(taps.kick - KICK_T)
+  return `save=${tapText(taps.save)} cross=${tapText(taps.cross)} kick=${tapText(taps.kick)} offset=${tapText(offset)}`
+}
+
+/** Copyable result of Tap to sync. */
+function SyncResult({ taps }: { taps: SyncTaps }) {
+  const inputRef = useRef<HTMLInputElement>(null)
+  const [copyStatus, setCopyStatus] = useState('')
+  const code = resultCode(taps)
+
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(code)
+      setCopyStatus('Copied.')
+    } catch {
+      const input = inputRef.current
+      if (input) {
+        input.focus()
+        input.select()
+      }
+      setCopyStatus('Could not copy automatically. The code is selected: copy it by hand.')
+    }
+  }
+
+  return (
+    <div className="wa-result">
+      <label className="ls-field wa-code">
+        <span>Sync code</span>
+        <input
+          ref={inputRef}
+          type="text"
+          readOnly
+          value={code}
+          aria-describedby="wa-code-help"
+          onFocus={(e) => e.currentTarget.select()}
+        />
+      </label>
+      <button type="button" className="ls-btn wa-wide" onClick={() => void copy()}>
+        Copy
+      </button>
+      <p className="ls-help" role="status">
+        {copyStatus}
+      </p>
+      <p id="wa-code-help" className="ls-help">
+        Send this code to the tech lead to sync it for everyone.
+      </p>
+    </div>
+  )
+}
+
+/** Tap to sync: the user taps three moments as they happen in the official video. */
+function TapToSync({ wa, onDone }: { wa: WatchAlong; onDone: () => void }) {
+  const headingRef = useRef<HTMLHeadingElement>(null)
+  const [announce, setAnnounce] = useState('')
+  const ready = wa.ytState === 'ready'
+
+  // Focus the heading when the mode opens (the panel mounts at the top of the page).
+  useEffect(() => {
+    headingRef.current?.focus()
+  }, [])
+
+  const record = (m: (typeof SYNC_MOMENTS)[number]) => {
+    const time = wa.recordTap(m.key)
+    if (time === null) {
+      setAnnounce('The video is not ready yet. Try again in a moment.')
+      return
+    }
+    const saved = m.key === 'kick' ? ' Video sync saved on this device.' : ''
+    setAnnounce(`Recorded: ${m.label} at ${time.toFixed(1)} seconds.${saved}`)
+  }
+
+  return (
+    <section className="wa-tapsync" aria-labelledby="wa-tapsync-title">
+      <h2 id="wa-tapsync-title" ref={headingRef} tabIndex={-1} className="wa-title">
+        Tap to sync
+      </h2>
+      <p className="ls-help wa-tapsync-help">
+        Our sound is stopped. The video plays from the start, muted, with its own controls so you can rewind. Tap
+        each button at the exact moment it happens in the video. Tap again to redo it.
+      </p>
+      {wa.ytState === 'loading' && <p className="ls-help">Loading the official video…</p>}
+      {wa.ytState === 'failed' && <p className="ls-help">{OFFLINE_MESSAGE}</p>}
+      <ul className="wa-moments">
+        {SYNC_MOMENTS.map((m) => {
+          const v = wa.taps[m.key]
+          return (
+            <li key={m.key} className="wa-moment">
+              <button
+                type="button"
+                className="ls-btn wa-moment-btn"
+                disabled={!ready}
+                aria-describedby={`wa-moment-${m.key}`}
+                onClick={() => record(m)}
+              >
+                {m.label}
+              </button>
+              <span id={`wa-moment-${m.key}`} className="wa-moment-value">
+                {v === null ? 'Not recorded' : `${v.toFixed(1)} s`}
+              </span>
+            </li>
+          )
+        })}
+      </ul>
+      <p className="wa-announce" role="status" aria-live="polite">
+        {announce}
+      </p>
+      <SyncResult taps={wa.taps} />
+      <button type="button" className="ls-btn ls-btn-primary wa-wide" onClick={onDone}>
+        Done, play it synced
+      </button>
+    </section>
+  )
+}
+
 /** "Adjust video sync" disclosure: the offset in use and ways to change it. */
-export function WatchAlongSync({ wa }: { wa: WatchAlong }) {
+export function WatchAlongSync({
+  wa,
+  onStartSync,
+  onSyncDone,
+}: {
+  wa: WatchAlong
+  onStartSync: () => void
+  onSyncDone: () => void
+}) {
   const kick = demoClip.events.find((e) => e.type === 'overhead_kick')
   const nudge = (d: number) => wa.setOffset(wa.offset + d)
   if (!wa.available) return null
+  const anyTap = wa.taps.save !== null || wa.taps.cross !== null || wa.taps.kick !== null
 
   return (
-    <details className="ls-panel wa-panel">
+    <details
+      id="wa-sync-panel"
+      className="ls-panel wa-panel"
+      open={wa.panelOpen}
+      onToggle={(e) => wa.setPanelOpen(e.currentTarget.open)}
+    >
       <summary>Adjust video sync</summary>
-      <p className="wa-saved" aria-live="polite">
+      {wa.syncing && <TapToSync wa={wa} onDone={onSyncDone} />}
+      {!wa.syncing && wa.canTapSync && (
+        <>
+          <button type="button" className="ls-btn ls-btn-primary wa-wide" onClick={onStartSync}>
+            Tap to sync
+          </button>
+          <p className="ls-help">
+            Stops our sound and plays the video from the start, so you can tap three moments as they happen.
+          </p>
+          {anyTap && <SyncResult taps={wa.taps} />}
+        </>
+      )}
+      <p className="wa-saved" aria-live={wa.syncing ? 'off' : 'polite'}>
         Video time at kick-off of our clip: <strong>{wa.offset.toFixed(1)} s</strong>
         {wa.offsetIsOverride ? ' (saved on this device)' : ' (default)'}
       </p>
